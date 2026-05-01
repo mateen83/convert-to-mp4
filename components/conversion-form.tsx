@@ -1,10 +1,17 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { convertFormSchema, ConvertFormData } from '@/lib/validation';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Zap } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface ConversionFormProps {
   onSubmit: (data: ConvertFormData) => void;
@@ -15,11 +22,16 @@ interface ConversionFormProps {
 
 export function ConversionForm({ onSubmit, isLoading = false, error, canConvert = true }: ConversionFormProps) {
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<ConvertFormData>({
     resolver: zodResolver(convertFormSchema),
+    defaultValues: {
+      resolution: '',
+      quality: '',
+      format: '',
+    },
   });
 
   return (
@@ -30,16 +42,25 @@ export function ConversionForm({ onSubmit, isLoading = false, error, canConvert 
           <label htmlFor="resolution" className="block text-sm font-medium text-foreground mb-2">
             Resolution
           </label>
-          <select
-            id="resolution"
-            {...register('resolution')}
-            className="w-full rounded-lg border border-border bg-card px-4 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="">Select resolution</option>
-            <option value="720">720p HD</option>
-            <option value="1080">1080p Full HD</option>
-            <option value="2160">2160p 4K</option>
-          </select>
+          <Controller
+            name="resolution"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <SelectTrigger
+                  id="resolution"
+                  className="h-11 w-full rounded-xl border-border/70 bg-background shadow-sm transition-all duration-200 hover:border-primary/40 focus:ring-primary/20"
+                >
+                  <SelectValue placeholder="Select resolution" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/70 shadow-lg">
+                  <SelectItem value="720">720p HD</SelectItem>
+                  <SelectItem value="1080">1080p Full HD</SelectItem>
+                  <SelectItem value="2160">2160p 4K</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.resolution && (
             <p className="mt-1 text-sm text-destructive">{errors.resolution.message}</p>
           )}
@@ -50,16 +71,25 @@ export function ConversionForm({ onSubmit, isLoading = false, error, canConvert 
           <label htmlFor="quality" className="block text-sm font-medium text-foreground mb-2">
             Quality
           </label>
-          <select
-            id="quality"
-            {...register('quality')}
-            className="w-full rounded-lg border border-border bg-card px-4 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="">Select quality</option>
-            <option value="medium">Medium (Fast)</option>
-            <option value="high">High (Balanced)</option>
-            <option value="very_high">Very High (Slow)</option>
-          </select>
+          <Controller
+            name="quality"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <SelectTrigger
+                  id="quality"
+                  className="h-11 w-full rounded-xl border-border/70 bg-background shadow-sm transition-all duration-200 hover:border-primary/40 focus:ring-primary/20"
+                >
+                  <SelectValue placeholder="Select quality" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/70 shadow-lg">
+                  <SelectItem value="medium">Medium (Fast)</SelectItem>
+                  <SelectItem value="high">High (Balanced)</SelectItem>
+                  <SelectItem value="very_high">Very High (Slow)</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.quality && <p className="mt-1 text-sm text-destructive">{errors.quality.message}</p>}
         </div>
 
@@ -68,15 +98,24 @@ export function ConversionForm({ onSubmit, isLoading = false, error, canConvert 
           <label htmlFor="format" className="block text-sm font-medium text-foreground mb-2">
             Format
           </label>
-          <select
-            id="format"
-            {...register('format')}
-            className="w-full rounded-lg border border-border bg-card px-4 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          >
-            <option value="">Select format</option>
-            <option value="mp4">MP4 (H.264)</option>
-            <option value="webm">WebM (VP9)</option>
-          </select>
+          <Controller
+            name="format"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value || undefined} onValueChange={field.onChange}>
+                <SelectTrigger
+                  id="format"
+                  className="h-11 w-full rounded-xl border-border/70 bg-background shadow-sm transition-all duration-200 hover:border-primary/40 focus:ring-primary/20"
+                >
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/70 shadow-lg">
+                  <SelectItem value="mp4">MP4 (H.264)</SelectItem>
+                  <SelectItem value="webm">WebM (VP9)</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.format && <p className="mt-1 text-sm text-destructive">{errors.format.message}</p>}
         </div>
       </div>

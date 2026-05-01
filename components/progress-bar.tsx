@@ -58,7 +58,9 @@ export function ProgressBar({ progress, status, error, outputPath, isUploading =
             </>
           )}
         </div>
-        {status === 'processing' && <span className="text-xs text-muted-foreground">Live updates every 1s</span>}
+        {status === 'processing' && (
+          <span className="text-xs text-muted-foreground">Live updates every 3-5s</span>
+        )}
       </div>
 
       {error && (

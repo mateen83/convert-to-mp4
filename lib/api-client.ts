@@ -42,13 +42,16 @@ export async function convertVideo(
   return response.json();
 }
 
-export async function getConversionStatus(jobId: string): Promise<{
+export async function getConversionStatus(
+  jobId: string,
+  options?: { signal?: AbortSignal },
+): Promise<{
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number;
   error?: string;
   outputPath?: string;
 }> {
-  const response = await fetch(`/api/status?jobId=${jobId}`);
+  const response = await fetch(`/api/status?jobId=${jobId}`, { signal: options?.signal });
 
   if (!response.ok) {
     const error = await response.json();

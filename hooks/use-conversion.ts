@@ -35,11 +35,26 @@ export function useConversion(): UseConversionReturn {
 
   const onPollResult = useCallback((result: { status: 'pending' | 'processing' | 'completed' | 'failed'; progress: number; error?: string; outputPath?: string }) => {
     const mappedStatus = result.status === 'pending' ? 'processing' : result.status;
-    setState({
-      status: mappedStatus,
-      progress: result.progress,
-      error: result.error || null,
-      outputPath: result.outputPath || null,
+    setState((prev) => {
+      const safeProgress = Math.min(100, Math.max(prev.progress, result.progress));
+      const nextError = result.error || null;
+      const nextOutputPath = result.outputPath || null;
+
+      if (
+        prev.status === mappedStatus &&
+        prev.progress === safeProgress &&
+        prev.error === nextError &&
+        prev.outputPath === nextOutputPath
+      ) {
+        return prev;
+      }
+
+      return {
+        status: mappedStatus,
+        progress: safeProgress,
+        error: nextError,
+        outputPath: nextOutputPath,
+      };
     });
 
     if (result.status === 'completed' || result.status === 'failed') {
@@ -63,7 +78,8 @@ export function useConversion(): UseConversionReturn {
   useJobStatusPolling({
     jobId,
     enabled: isPolling,
-    intervalMs: 1000,
+    intervalMs: 3000,
+    maxIntervalMs: 5000,
     onResult: onPollResult,
     onError: onPollError,
   });
